@@ -18,7 +18,7 @@ class AuthHandler
         $tokenId    = base64_encode(random_bytes(16));
         $issuedAt   = new DateTimeImmutable();
         $expire     = $issuedAt->modify('+60 minutes')->getTimestamp();     
-        $serverName = "http://127.0.0.1:6000";
+        $serverName = "http://127.0.0.1:6003";
         $userID   = $user->id;                                    
 
         // Create the token as an array

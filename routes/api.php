@@ -31,10 +31,10 @@ use App\Http\Controllers\Auth\UserController;
 // Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 //User normal Endpoints
-// Route::group(['prefix' => 'v1'], function () {
-//     Route::post('/user/create', [UserController::class, 'create'])->name('create.user');
-// });
-Route::post('/create', [UserController::class, 'create'])->name('create.user');
+Route::group(['prefix' => 'v1'], function () {
+    Route::post('/user/create', [UserController::class, 'create'])->name('create.user');
+});
+// Route::post('/create', [UserController::class, 'create'])->name('create.user');
 //User Secured Endpoints
 // Route::group(['prefix' => 'v1', 'middleware' => ['jwt.auth']], function () {
    

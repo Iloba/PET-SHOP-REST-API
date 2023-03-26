@@ -8,8 +8,12 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+
     public function create(CreateUserRequest $request)
     {
-     dd("Hello");
+        dd("hello");
+
+        
+
     }
 }

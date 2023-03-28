@@ -63,8 +63,8 @@ class UserTest extends TestCase
     public function test_that_users_with_wrong_credentials_cannot_login() : void
     {
         $loginUser = $this->postJson(route('login.user', [
-            'email' => "lasttime@gmail.com",
-            'password' => 'password'
+            'email' => "some@gmail.com",
+            'password' => 'somepassword'
         ]));
         $loginUser->assertStatus(400);
         $loginUser->assertJson(

@@ -61,8 +61,8 @@ class AdminTest extends TestCase
     public function test_that_admin_with_wrong_credentials_cannot_login() : void
     {
         $loginAdmin = $this->postJson(route('login.admin', [
-            'email' => "lasttime@gmail.com",
-            'password' => 'password'
+            'email' => "someexample@gmail.com",
+            'password' => 'somepassword'
         ]));
         $loginAdmin->assertStatus(400);
         $loginAdmin->assertJson(

@@ -12,6 +12,7 @@ use App\Http\Controllers\APIController;
 use App\Services\Auth\CreateUserService;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\User\CreateUserRequest;
+use App\Models\AccessToken;
 
 class UserController extends APIController
 {
@@ -27,6 +28,11 @@ class UserController extends APIController
                 'user' => $user,
                 'token' => $token,
             ];
+
+            $AccessToken = new AccessToken;
+            $AccessToken->token = $token;
+            $AccessToken->is_valid = true;
+            $AccessToken->save();
 
             return $this->sendResponse($success, 'user registered successfully', 201);
         }
@@ -52,6 +58,12 @@ class UserController extends APIController
                 'token' => $token,
             ];
 
+
+            $AccessToken = new AccessToken;
+            $AccessToken->token = $token;
+            $AccessToken->is_valid = true;
+            $AccessToken->save();
+
             return $this->sendResponse($success, 'Login Successful', 200);
         } else {
             return $this->sendError('error', 'Invalid Credentials');
@@ -62,8 +74,10 @@ class UserController extends APIController
     {
         $publicHelper = new PublicHelper();
         $token = $publicHelper->GetAndDecodeJWT();
+        $rawtoken = $publicHelper->GetRawJWT();
+        $this->checkTokenValidity($rawtoken);
         $user = User::where('uuid', $token->data->user_uuid)->first();
-        if(!$user){
+        if (!$user) {
             return $this->sendError('error', "No such user found");
         }
         $password = Hash::make($request->validated()['password']);
@@ -78,11 +92,13 @@ class UserController extends APIController
     public function profile(PublicHelper $publicHelper)
     {
         $token = $publicHelper->GetAndDecodeJWT();
+        $rawtoken = $publicHelper->GetRawJWT();
+        $this->checkTokenValidity($rawtoken);
         $user =  User::where('uuid', $token->data->user_uuid)->first();
-        if(!$user){
+        if (!$user) {
             return $this->sendError('error', "No such user found");
         }
-       
+
         $success = [
             'user' => $user,
         ];
@@ -91,20 +107,45 @@ class UserController extends APIController
 
     public function delete(PublicHelper $publicHelper)
     {
+      
+        $rawtoken =  $publicHelper->GetRawJWT();
+        
+        $this->checkTokenValidity($rawtoken);
+
         $token = $publicHelper->GetAndDecodeJWT();
+
         $user =  User::where('uuid', $token->data->user_uuid)->first();
-        if(!$user){
+      
+        if (!$user) {
             return $this->sendError('error', "No such user found");
         }
         $user->delete();
 
+        $userToken = AccessToken::where('token', $token)->first();
+        $userToken->is_valid = false;
+        $userToken->save();
+
         return $this->sendResponse([], 'User Account Deleted ', 200);
     }
 
-    public function logout()
+    public function logout(PublicHelper $publicHelper)
     {
         Auth::logout();
         //On Logout Delete Token
+
+        $token = $publicHelper->GetRawJWT();
+        $userToken = AccessToken::where('token', $token)->first();
+        $userToken->is_valid = false;
+        $userToken->save();
         return $this->sendResponse([], 'Logout Successful', 200);
+    }
+
+    public function checkTokenValidity($token)
+    {
+        $tokenFromDB = AccessToken::where('token', $token)->first();
+
+        if (!$tokenFromDB->is_valid) {
+            abort(401, 'Token no longer Valid');
+        }
     }
 }

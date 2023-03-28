@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use App\Helpers\PublicHelper;
 use Exception;
 use App\Models\User;
 use Illuminate\Support\Str;
@@ -17,6 +18,7 @@ class CreateUserService
         $data2 = array_merge(['uuid' => $uuid],   $data, ['password' => $password]);
         $user = User::create($data2);
 
+      
 
         return $user;
     }

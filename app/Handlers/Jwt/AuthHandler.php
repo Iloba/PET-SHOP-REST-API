@@ -18,8 +18,8 @@ class AuthHandler
         $tokenId    = base64_encode(random_bytes(16));
         $issuedAt   = new DateTimeImmutable();
         $expire     = $issuedAt->modify('+60 minutes')->getTimestamp();     
-        $serverName = "http://127.0.0.1:6003";
-        $userID   = $user->id;                                    
+        $serverName = env("APP_URL");
+        $userID   = $user->uuid;                                    
 
         // Create the token as an array
         $data = [
@@ -29,7 +29,7 @@ class AuthHandler
             'nbf'  => $issuedAt->getTimestamp(),    
             'exp'  => $expire,                      
             'data' => [                             
-                'userID' => $userID,            
+                'user_uuid' => $userID,            
             ]
         ];
 

@@ -32,10 +32,11 @@ use App\Http\Controllers\Auth\UserController;
 
 //User normal Endpoints
 Route::group(['prefix' => 'v1'], function () {
-    Route::post('/user/create', [UserController::class, 'create'])->name('create.user');
+    Route::post('/user/create', [UserController::class, 'store'])->name('create.user');
+    Route::post('/user/login', [UserController::class, 'login'])->name('login.user');
 });
-// Route::post('/create', [UserController::class, 'create'])->name('create.user');
+
 //User Secured Endpoints
-// Route::group(['prefix' => 'v1', 'middleware' => ['jwt.auth']], function () {
-   
-//   });
+Route::group(['prefix' => 'v1', 'middleware' => ['jwt.auth']], function () {
+    Route::post('/user/logout', [UserController::class, 'logout'])->name('logout.user');
+});

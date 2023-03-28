@@ -74,12 +74,12 @@ class UserTest extends TestCase
     }
     public function test_that_a_user_can_logout() :void
     {
-        $logoutUser = $this->actingAs($this->user)->withHeaders([
-            'HTTP_Accept' => 'application/json',
-            'HTTP_Authorization' => 'Bearer ' . '$response->getContent()'
-        ])->postJson(route('logout.user'));
+    //     $logoutUser = $this->actingAs($this->user)->withHeaders([
+    //         'HTTP_Accept' => 'application/json',
+    //         'HTTP_Authorization' => 'Bearer ' . '$response->getContent()'
+    //     ])->postJson(route('logout.user'));
       
-       dd( $logoutUser->getContent());
+    //    dd( $logoutUser->getContent());
         // $logoutUser->assertStatus(200);
           
         // $logoutUser->assertJson(

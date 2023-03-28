@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Handlers\Jwt\AuthHandler;
 
 class APIController extends Controller
 {
@@ -40,5 +41,12 @@ class APIController extends Controller
         ];
 
         return response()->json($response, 404);
+    }
+
+    protected function respondWithToken($user)
+    {
+        $authHandler = new AuthHandler;
+        $token = $authHandler->GenerateToken($user);
+        return $token;
     }
 }

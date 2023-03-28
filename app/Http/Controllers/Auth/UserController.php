@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use Illuminate\Http\Request;
-use App\Handlers\Jwt\AuthHandler;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\APIController;
 use App\Services\Auth\CreateUserService;
@@ -63,10 +61,5 @@ class UserController extends APIController
         return $this->sendResponse([], 'Logout Successful', 200);
     }
 
-    protected function respondWithToken($user)
-    {
-        $authHandler = new AuthHandler;
-        $token = $authHandler->GenerateToken($user);
-        return $token;
-    }
+   
 }

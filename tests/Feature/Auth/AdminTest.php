@@ -40,6 +40,7 @@ class AdminTest extends TestCase
         $this->assertEquals($admin->email, "Timothy@example.com");
         $this->assertEquals($admin->address, "Malali Kaduna, Nigeria");
         $this->assertEquals($admin->phone_number, "09087761233");
+        $this->assertEquals($admin->is_admin, true);
     }
 
     public function test_that_only_an_admin_with_right_credentials_can_login(): void

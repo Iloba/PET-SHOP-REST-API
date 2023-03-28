@@ -41,6 +41,9 @@ Route::group(['prefix' => 'v1'], function () {
 
 //User Secured Endpoints
 Route::group(['prefix' => 'v1', 'middleware' => ['jwt.auth']], function () {
-    Route::post('/user/logout', [UserController::class, 'logout'])->name('logout.user');
-    Route::post('/admin/logout', [AdminController::class, 'logout'])->name('logout.admin');
+    Route::post('user/logout', [UserController::class, 'logout'])->name('logout.user');
+    Route::post('admin/logout', [AdminController::class, 'logout'])->name('logout.admin');
+    Route::put('user/edit', [UserController::class, 'editUser'])->name('edit.user');
+    Route::get('user', [UserController::class, 'profile'])->name('user.profile');
+    Route::delete('user', [UserController::class, 'delete'])->name('user.delete');
 });

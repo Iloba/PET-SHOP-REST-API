@@ -72,6 +72,11 @@ class UserTest extends TestCase
             $json->hasAll(['data', 'message'])->missing('token')
         );
     }
+
+    public function test_that_a_user_can_edit_profile(): void
+    {
+       
+    }
     public function test_that_a_user_can_logout() :void
     {
     //     $logoutUser = $this->actingAs($this->user)->withHeaders([

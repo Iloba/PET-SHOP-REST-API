@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Helpers\PublicHelper;
+use App\Http\Middleware\VerifyJwt;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\APIController;
 use App\Services\Auth\CreateUserService;
 use Illuminate\Support\Facades\Validator;
@@ -54,12 +58,53 @@ class UserController extends APIController
         }
     }
 
+    public function editUser(CreateUserRequest $request)
+    {
+        $publicHelper = new PublicHelper();
+        $token = $publicHelper->GetAndDecodeJWT();
+        $user = User::where('uuid', $token->data->user_uuid)->first();
+        if(!$user){
+            return $this->sendError('error', "No such user found");
+        }
+        $password = Hash::make($request->validated()['password']);
+        $ValidatedData = array_merge($request->validated(), ['password' => $password]);
+        $user->update($ValidatedData);
+        $success = [
+            'user' => $user,
+        ];
+        return $this->sendResponse($success, 'Update Successful', 200);
+    }
+
+    public function profile(PublicHelper $publicHelper)
+    {
+        $token = $publicHelper->GetAndDecodeJWT();
+        $user =  User::where('uuid', $token->data->user_uuid)->first();
+        if(!$user){
+            return $this->sendError('error', "No such user found");
+        }
+       
+        $success = [
+            'user' => $user,
+        ];
+        return $this->sendResponse($success, 'User Profile', 200);
+    }
+
+    public function delete(PublicHelper $publicHelper)
+    {
+        $token = $publicHelper->GetAndDecodeJWT();
+        $user =  User::where('uuid', $token->data->user_uuid)->first();
+        if(!$user){
+            return $this->sendError('error', "No such user found");
+        }
+        $user->delete();
+
+        return $this->sendResponse([], 'User Account Deleted ', 200);
+    }
+
     public function logout()
     {
         Auth::logout();
-
+        //On Logout Delete Token
         return $this->sendResponse([], 'Logout Successful', 200);
     }
-
-   
 }

@@ -48,4 +48,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function ScopeallNonAdminUsers($query)
+    {
+        return $query->where('is_admin', false);
+    }
 }

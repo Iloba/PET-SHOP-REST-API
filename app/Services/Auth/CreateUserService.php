@@ -17,9 +17,6 @@ class CreateUserService
         $uuid = (string)Str::uuid();
         $data2 = array_merge(['uuid' => $uuid],   $data, ['password' => $password]);
         $user = User::create($data2);
-
-      
-
         return $user;
     }
 }

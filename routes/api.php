@@ -46,6 +46,15 @@ Route::group(['prefix' => 'v1', 'middleware' => ['jwt.auth']], function () {
     Route::put('user/edit', [UserController::class, 'editUser'])->name('edit.user');
     Route::get('user', [UserController::class, 'profile'])->name('user.profile');
     Route::delete('user', [UserController::class, 'delete'])->name('user.delete');
+    Route::get('admin/user-listing', [AdminController::class, 'users'])->name('users.listing');
+    Route::put('admin/user-edit/{uuid}', [AdminController::class, 'editUser'])->name('admin.edit.user');
+    Route::delete('admin/user-delete/{uuid}', [AdminController::class, 'deleteUser'])->name('admin.delete.user');
+});
+
+//Admin Middleware and Route
+Route::group(['prefix' => 'v1', 'middleware' => ['jwt.auth', 'admin']], function () {
+    Route::post('admin/logout', [AdminController::class, 'logout'])->name('logout.admin');
+    Route::get('admin/user-listing', [AdminController::class, 'users'])->name('users.listing');
     Route::put('admin/user-edit/{uuid}', [AdminController::class, 'editUser'])->name('admin.edit.user');
     Route::delete('admin/user-delete/{uuid}', [AdminController::class, 'deleteUser'])->name('admin.delete.user');
 });

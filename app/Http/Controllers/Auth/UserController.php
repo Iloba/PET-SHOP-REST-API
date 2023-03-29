@@ -111,36 +111,5 @@ class UserController extends APIController
         return $this->sendResponse([], 'Logout Successful', 200);
     }
 
-    public function saveToken($token)
-    {
-        $AccessToken = new AccessToken;
-        $AccessToken->token = $token;
-        $AccessToken->is_valid = true;
-        $AccessToken->save();
-    }
-
-    public function getAuthenticatedUser($token)
-    {
-        $user = User::where('uuid', $token->data->user_uuid)->first();
-        if (!$user) {
-            abort(403, "User not found");
-        }
-        return $user;
-    }
-
-    public function invalidateToken($token)
-    {
-        $userToken = AccessToken::where('token', $token)->first();
-        $userToken->is_valid = false;
-        $userToken->save();
-    }
-
-    public function checkTokenValidity($token)
-    {
-        $tokenFromDB = AccessToken::where('token', $token)->first();
-
-        if (!$tokenFromDB->is_valid) {
-            abort(401, 'Token no longer Valid');
-        }
-    }
+   
 }

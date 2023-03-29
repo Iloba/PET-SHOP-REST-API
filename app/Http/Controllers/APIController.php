@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\AccessToken;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Handlers\Jwt\AuthHandler;
@@ -48,5 +50,42 @@ class APIController extends Controller
         $authHandler = new AuthHandler;
         $token = $authHandler->GenerateToken($user);
         return $token;
+    }
+
+    public function saveToken($token)
+    {
+        $AccessToken = new AccessToken;
+        $AccessToken->token = $token;
+        $AccessToken->is_valid = true;
+        $AccessToken->save();
+    }
+
+    public function getAuthenticatedUser($token)
+    {
+        $user = User::where('uuid', $token->data->user_uuid)->first();
+        if (!$user) {
+            abort(403, "User not found");
+        }
+        return $user;
+    }
+
+    public function invalidateToken($token)
+    {
+        $userToken = AccessToken::where('token', $token)->first();
+        if(!$userToken){
+            abort(403, "user Token Not found");
+        }
+        $userToken->is_valid = false;
+        $userToken->save();
+        
+    }
+
+    public function checkTokenValidity($token)
+    {
+        $tokenFromDB = AccessToken::where('token', $token)->first();
+
+        if (!$tokenFromDB->is_valid) {
+            abort(401, 'Token no longer Valid');
+        }
     }
 }

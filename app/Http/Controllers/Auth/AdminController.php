@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Helpers\PublicHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\APIController;
 use App\Services\Auth\CreateAdminService;
 use Illuminate\Support\Facades\Validator;
@@ -23,6 +26,7 @@ class AdminController extends APIController
                 'user' => $user,
                 'token' => $token,
             ];
+            $this->saveToken($token);
 
             return $this->sendResponse($success, 'Admin registered successfully', 201);
         }
@@ -47,25 +51,63 @@ class AdminController extends APIController
             $success = [
                 'token' => $token,
             ];
-
+            $this->saveToken($token);
             return $this->sendResponse($success, 'Login Successful', 200);
         } else {
             return $this->sendError('error', 'Invalid Credentials');
         }
     }
 
-    public function editUser(Request $request)
+    public function users(PublicHelper $publicHelper)
     {
-        
+        $token = $publicHelper->GetRawJWT();
+        $this->checkTokenValidity($token);
+        $users = User::allNonAdminUsers()->get();
+
+        $success = [
+            'users' => $users,
+        ];
+
+        return $this->sendResponse($success, 'All users', 200);
     }
 
-    public function deleteUser()
+    public function editUser($uuid, CreateUserRequest $request)
     {
-        
+        $user = $this->findUserByUuid($uuid);
+        $password = Hash::make($request->validated()['password']);
+        $ValidatedData = array_merge($request->validated(), ['password' => $password]);
+        $user->update($ValidatedData);
+        $success = [
+            'user' => $user,
+        ];
+
+        return $this->sendResponse($success, 'User Update Successful', 200);
     }
 
-    public function logout()
+    public function deleteUser($uuid)
     {
-       
+        $user = $this->findUserByUuid($uuid);
+        $user->delete();
+        return $this->sendResponse([], 'User Account Deleted ', 200);
+    }
+
+    public function logout(PublicHelper $publicHelper)
+    {
+      
+      
+        $token = $publicHelper->GetRawJWT();
+        $this->checkTokenValidity($token);
+        Auth::logout();
+        $this->invalidateToken($token);
+        return $this->sendResponse([], 'Logout Successful', 200);
+    }
+
+    public function findUserByUuid($uuid)
+    {
+        $user = User::where('uuid', $uuid)->first();
+        if (!$user) {
+            abort(403, "User not Found");
+        }
+        return $user;
     }
 }

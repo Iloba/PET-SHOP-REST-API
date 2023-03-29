@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Exception;
+use App\Models\User;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use DateTimeImmutable;
@@ -52,5 +53,16 @@ class PublicHelper
         $token = $this->DecodeRawJWT($jwt);
 
         return $token;
+    }
+
+    public function getAuthenticatedUser($token)
+    {
+      
+        $user = User::where('uuid', $token->data->user_uuid)->first();
+  
+        if (!$user) {
+            abort(403, "User not found");
+        }
+        return $user;
     }
 }

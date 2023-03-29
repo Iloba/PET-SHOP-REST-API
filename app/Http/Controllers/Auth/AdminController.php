@@ -54,6 +54,16 @@ class AdminController extends APIController
         }
     }
 
+    public function editUser(Request $request)
+    {
+        
+    }
+
+    public function deleteUser()
+    {
+        
+    }
+
     public function logout()
     {
        

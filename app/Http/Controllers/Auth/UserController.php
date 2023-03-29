@@ -16,25 +16,22 @@ use App\Models\AccessToken;
 
 class UserController extends APIController
 {
-
     public function store(CreateUserRequest $request, CreateUserService $createUserService)
     {
         $user = $createUserService->create($request->validated());
 
         if ($user) {
-
             $token =  $this->respondWithToken($user);
             $success = [
                 'user' => $user,
                 'token' => $token,
             ];
 
-            $AccessToken = new AccessToken;
-            $AccessToken->token = $token;
-            $AccessToken->is_valid = true;
-            $AccessToken->save();
+            $this->saveToken($token);
 
             return $this->sendResponse($success, 'user registered successfully', 201);
+        } else {
+            return $this->sendError('error', 'Something Went Wrong');
         }
     }
 
@@ -58,11 +55,7 @@ class UserController extends APIController
                 'token' => $token,
             ];
 
-
-            $AccessToken = new AccessToken;
-            $AccessToken->token = $token;
-            $AccessToken->is_valid = true;
-            $AccessToken->save();
+            $this->saveToken($token);
 
             return $this->sendResponse($success, 'Login Successful', 200);
         } else {
@@ -70,16 +63,13 @@ class UserController extends APIController
         }
     }
 
-    public function editUser(CreateUserRequest $request)
+    public function editUser(CreateUserRequest $request, PublicHelper $publicHelper)
     {
-        $publicHelper = new PublicHelper();
         $token = $publicHelper->GetAndDecodeJWT();
         $rawtoken = $publicHelper->GetRawJWT();
         $this->checkTokenValidity($rawtoken);
-        $user = User::where('uuid', $token->data->user_uuid)->first();
-        if (!$user) {
-            return $this->sendError('error', "No such user found");
-        }
+        $user = $this->getAuthenticatedUser($token);
+
         $password = Hash::make($request->validated()['password']);
         $ValidatedData = array_merge($request->validated(), ['password' => $password]);
         $user->update($ValidatedData);
@@ -94,50 +84,55 @@ class UserController extends APIController
         $token = $publicHelper->GetAndDecodeJWT();
         $rawtoken = $publicHelper->GetRawJWT();
         $this->checkTokenValidity($rawtoken);
-        $user =  User::where('uuid', $token->data->user_uuid)->first();
-        if (!$user) {
-            return $this->sendError('error', "No such user found");
-        }
-
+        $user = $this->getAuthenticatedUser($token);
         $success = [
-            'user' => $user,
+            'user_profile' => $user,
         ];
+
         return $this->sendResponse($success, 'User Profile', 200);
     }
 
     public function delete(PublicHelper $publicHelper)
     {
-      
-        $rawtoken =  $publicHelper->GetRawJWT();
-        
-        $this->checkTokenValidity($rawtoken);
-
         $token = $publicHelper->GetAndDecodeJWT();
-
-        $user =  User::where('uuid', $token->data->user_uuid)->first();
-      
-        if (!$user) {
-            return $this->sendError('error', "No such user found");
-        }
+        $rawtoken =  $publicHelper->GetRawJWT();
+        $this->checkTokenValidity($rawtoken); 
+        $user = $this->getAuthenticatedUser($token);
         $user->delete();
-
-        $userToken = AccessToken::where('token', $token)->first();
-        $userToken->is_valid = false;
-        $userToken->save();
-
+        $this->invalidateToken($token);
         return $this->sendResponse([], 'User Account Deleted ', 200);
     }
 
     public function logout(PublicHelper $publicHelper)
     {
         Auth::logout();
-        //On Logout Delete Token
-
         $token = $publicHelper->GetRawJWT();
+        $this->invalidateToken($token);
+        return $this->sendResponse([], 'Logout Successful', 200);
+    }
+
+    public function saveToken($token)
+    {
+        $AccessToken = new AccessToken;
+        $AccessToken->token = $token;
+        $AccessToken->is_valid = true;
+        $AccessToken->save();
+    }
+
+    public function getAuthenticatedUser($token)
+    {
+        $user = User::where('uuid', $token->data->user_uuid)->first();
+        if (!$user) {
+            abort(403, "User not found");
+        }
+        return $user;
+    }
+
+    public function invalidateToken($token)
+    {
         $userToken = AccessToken::where('token', $token)->first();
         $userToken->is_valid = false;
         $userToken->save();
-        return $this->sendResponse([], 'Logout Successful', 200);
     }
 
     public function checkTokenValidity($token)

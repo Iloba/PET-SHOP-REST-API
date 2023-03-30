@@ -42,5 +42,19 @@ you can use this to signin as an admin
 
 to start the app, run <pre>php artisan serve</pre> 
 
+You can now test the Api. hit the following route using postman or any api client of your choice to login as an admin.
+
+<pre>
+   http://127.0.0.1:8000/api/v1/admin/login
+   
+   Make sure to add the credentials above in the request body (Email & Password)
+</pre>
+
+this will generate a token which you will use to access all admin protected routes. Add the token to your authorization header section and you will be able to access admin routes
+
+Note: Token expires after 1 hour
+
+
+
 
  

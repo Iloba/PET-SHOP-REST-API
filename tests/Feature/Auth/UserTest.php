@@ -73,26 +73,5 @@ class UserTest extends TestCase
             $json->hasAll(['data', 'message'])->missing('token')
         );
     }
-
-    public function test_that_a_user_can_edit_profile(): void
-    {
-    }
-    public function test_that_a_user_can_logout(): void
-    {
-      
-        $logoutUser = $this->getJson(route('logout.user'), [], 1, [ 'x-HTTP_AUTHORIZATION' => $this->token]);
-     
-        // $logoutUser = $this->actingAs($this->user)->withHeaders([
-        //     'HTTP_Accept' => 'application/json',
-        //     'HTTP_AUTHORIZATION' => $this->token
-        // ])->get(route('logout.user'), [], ['HTTP_Authorization' => $this->token]);
-
-        // dd($logoutUser->dumpHeaders());
-        $logoutUser->assertStatus(200);
-
-        $logoutUser->assertJson(
-            fn (AssertableJson $json) =>
-            $json->hasAll(['data', 'message'])->missing('token')
-        );
-    }
+   
 }

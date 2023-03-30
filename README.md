@@ -4,12 +4,12 @@ A restful Api for a petshop ecommerce store
 <h2>Introduction</h2>
 Petshop is an Ecommerce store where you can order for products and get them delivered to you instantly.
 
-It consumes data from an API that was built with Laravel and PHP/Firebase-jwt to token signing and verification
+It consumes data from an API that was built with Laravel and PHP/Firebase-jwt for token signing and verification
 
 
 <h2> Usage and Configuration </h2>
 <h3>Database Configuration</h3>
-Create a database (Sqlite, mysql or a database of your choice)
+Create a database on (Sqlite, mysql or a database of your choice)
 
 Then create a .env file, copy everything from the env.example file and then paste in the env file.
 After that, update the .env file to correspond with the database credentials you just created

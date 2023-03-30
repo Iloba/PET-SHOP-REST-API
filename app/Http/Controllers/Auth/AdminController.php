@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Helpers\PublicHelper;
 use App\Http\Controllers\Controller;
@@ -15,7 +16,7 @@ use App\Http\Requests\User\CreateUserRequest;
 
 class AdminController extends APIController
 {
-    public function store(CreateUserRequest $request, CreateAdminService $createAdminService)
+    public function store(CreateUserRequest $request, CreateAdminService $createAdminService): JsonResponse
     {
         $user = $createAdminService->create($request->validated());
 
@@ -32,7 +33,7 @@ class AdminController extends APIController
         }
     }
 
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email|exists:users,email',
@@ -58,7 +59,7 @@ class AdminController extends APIController
         }
     }
 
-    public function users(PublicHelper $publicHelper)
+    public function users(PublicHelper $publicHelper): JsonResponse
     {
         $token = $publicHelper->GetRawJWT();
         $this->checkTokenValidity($token);
@@ -71,7 +72,7 @@ class AdminController extends APIController
         return $this->sendResponse($success, 'All users', 200);
     }
 
-    public function editUser($uuid, CreateUserRequest $request)
+    public function editUser($uuid, CreateUserRequest $request): JsonResponse
     {
         $user = $this->findUserByUuid($uuid);
         $password = Hash::make($request->validated()['password']);
@@ -84,17 +85,17 @@ class AdminController extends APIController
         return $this->sendResponse($success, 'User Update Successful', 200);
     }
 
-    public function deleteUser($uuid)
+    public function deleteUser($uuid): JsonResponse
     {
         $user = $this->findUserByUuid($uuid);
         $user->delete();
         return $this->sendResponse([], 'User Account Deleted ', 200);
     }
 
-    public function logout(PublicHelper $publicHelper)
+    public function logout(PublicHelper $publicHelper): JsonResponse
     {
-      
-      
+
+
         $token = $publicHelper->GetRawJWT();
         $this->checkTokenValidity($token);
         Auth::logout();

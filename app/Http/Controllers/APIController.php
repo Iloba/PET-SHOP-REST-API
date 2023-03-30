@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\AccessToken;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Handlers\Jwt\AuthHandler;
@@ -13,7 +14,7 @@ class APIController extends Controller
 {
     // methods to handle API responses
 
-    public function sendResponse($data, $message, $status = 200)
+    public function sendResponse($data, $message, $status = 200): JsonResponse
     {
         $response = [
             'data' => $data,
@@ -23,7 +24,7 @@ class APIController extends Controller
         return response()->json($response, $status);
     }
 
-    public function sendError($message, $errorData = [], $status = 400)
+    public function sendError($message, $errorData = [], $status = 400): JsonResponse
     {
         $response = [
             'message' => $message
@@ -36,7 +37,7 @@ class APIController extends Controller
         return response()->json($response, $status);
     }
 
-    public function resourceNotFoundResponse(string $resource)
+    public function resourceNotFoundResponse(string $resource): JsonResponse
     {
         $response = [
             'error' => "The $resource wasn't found",
@@ -45,16 +46,16 @@ class APIController extends Controller
         return response()->json($response, 404);
     }
 
-    protected function respondWithToken($user)
+    protected function respondWithToken($user) : string
     {
-        $authHandler = new AuthHandler;
-        $token = $authHandler->GenerateToken($user);
-        return $token;
+        $authHandler = new AuthHandler();
+        return $authHandler->GenerateToken($user);
+
     }
 
     public function saveToken($token)
     {
-        $AccessToken = new AccessToken;
+        $AccessToken = new AccessToken();
         $AccessToken->token = $token;
         $AccessToken->is_valid = true;
         $AccessToken->save();
@@ -77,7 +78,7 @@ class APIController extends Controller
         }
         $userToken->is_valid = false;
         $userToken->save();
-        
+
     }
 
     public function checkTokenValidity($token)

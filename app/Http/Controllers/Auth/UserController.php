@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Helpers\PublicHelper;
 use App\Http\Middleware\VerifyJwt;
@@ -16,7 +17,7 @@ use App\Models\AccessToken;
 
 class UserController extends APIController
 {
-    public function store(CreateUserRequest $request, CreateUserService $createUserService)
+    public function store(CreateUserRequest $request, CreateUserService $createUserService): JsonResponse
     {
         $user = $createUserService->create($request->validated());
 
@@ -63,7 +64,7 @@ class UserController extends APIController
         }
     }
 
-    public function editUser(CreateUserRequest $request, PublicHelper $publicHelper)
+    public function editUser(CreateUserRequest $request, PublicHelper $publicHelper): JsonResponse
     {
         $token = $publicHelper->GetAndDecodeJWT();
         $rawtoken = $publicHelper->GetRawJWT();
@@ -79,9 +80,11 @@ class UserController extends APIController
         return $this->sendResponse($success, 'Update Successful', 200);
     }
 
-    public function profile(PublicHelper $publicHelper)
+    public function profile(PublicHelper $publicHelper): JsonResponse
     {
         $token = $publicHelper->GetAndDecodeJWT();
+
+
         $rawtoken = $publicHelper->GetRawJWT();
         $this->checkTokenValidity($rawtoken);
         $user = $this->getAuthenticatedUser($token);
@@ -92,18 +95,18 @@ class UserController extends APIController
         return $this->sendResponse($success, 'User Profile', 200);
     }
 
-    public function delete(PublicHelper $publicHelper)
+    public function delete(PublicHelper $publicHelper): JsonResponse
     {
         $token = $publicHelper->GetAndDecodeJWT();
         $rawtoken =  $publicHelper->GetRawJWT();
-        $this->checkTokenValidity($rawtoken); 
+        $this->checkTokenValidity($rawtoken);
         $user = $this->getAuthenticatedUser($token);
         $user->delete();
         $this->invalidateToken($token);
         return $this->sendResponse([], 'User Account Deleted ', 200);
     }
 
-    public function logout(PublicHelper $publicHelper)
+    public function logout(PublicHelper $publicHelper): JsonResponse
     {
         Auth::logout();
         $token = $publicHelper->GetRawJWT();
@@ -111,5 +114,5 @@ class UserController extends APIController
         return $this->sendResponse([], 'Logout Successful', 200);
     }
 
-   
+
 }

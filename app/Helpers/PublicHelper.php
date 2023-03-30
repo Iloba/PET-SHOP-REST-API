@@ -9,10 +9,10 @@ use Firebase\JWT\Key;
 use DateTimeImmutable;
 use Illuminate\Auth\AuthenticationException;
 
-class PublicHelper 
+class PublicHelper
 {
     // get jwt info from header
-    public function GetRawJWT()
+    public function GetRawJWT(): string
     {
         // check if header exists
         if(empty($_SERVER['HTTP_AUTHORIZATION'])) {
@@ -33,7 +33,7 @@ class PublicHelper
         return $jwt;
     }
 
-    public function DecodeRawJWT($jwt)
+    public function DecodeRawJWT($jwt): string
     {
         // use secret key to decode token
         $secretKey  = env('JWT_KEY');
@@ -47,7 +47,7 @@ class PublicHelper
         return $token;
     }
 
-    public function GetAndDecodeJWT()
+    public function GetAndDecodeJWT(): string
     {
         $jwt = $this->GetRawJWT();
         $token = $this->DecodeRawJWT($jwt);
@@ -57,9 +57,9 @@ class PublicHelper
 
     public function getAuthenticatedUser($token)
     {
-      
+
         $user = User::where('uuid', $token->data->user_uuid)->first();
-  
+
         if (!$user) {
             abort(403, "User not found");
         }

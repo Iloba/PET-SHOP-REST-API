@@ -23,16 +23,6 @@ class JwtMiddlewareTest extends TestCase
 
     public function testMiddlewareDoesNotThrowExceptionWhenAuthorizationHeaderPresent()
     {
-        // $request = new Request([], [], [], [], [], [
-        //     'HTTP_AUTHORIZATION' => 'Bearer some_token'
-        // ]);
-        // $middleware = new VerifyJwt();
-
-        // $middleware->handle($request, function($request){
-
-        // });
-
-        // If the middleware did not throw an exception, the test passed.
-        // $this->assertTrue(true);
+       
     }
 }

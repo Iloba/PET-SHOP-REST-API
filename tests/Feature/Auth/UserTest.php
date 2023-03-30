@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Handlers\Jwt\AuthHandler;
+use App\Helpers\PublicHelper;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -60,7 +61,7 @@ class UserTest extends TestCase
         );
     }
 
-    public function test_that_users_with_wrong_credentials_cannot_login() : void
+    public function test_that_users_with_wrong_credentials_cannot_login(): void
     {
         $loginUser = $this->postJson(route('login.user', [
             'email' => "some@gmail.com",
@@ -75,21 +76,23 @@ class UserTest extends TestCase
 
     public function test_that_a_user_can_edit_profile(): void
     {
-       
     }
-    public function test_that_a_user_can_logout() :void
+    public function test_that_a_user_can_logout(): void
     {
-    //     $logoutUser = $this->actingAs($this->user)->withHeaders([
-    //         'Accept' => 'application/json',
-    //         'Authorization' => 'Bearer ' . '$response->getContent()'
-    //     ])->postJson(route('logout.user'));
       
-    //    dd( $logoutUser->getContent());
-    //     $logoutUser->assertStatus(200);
-          
-    //     $logoutUser->assertJson(
-    //         fn (AssertableJson $json) =>
-    //         $json->hasAll(['data', 'message'])->missing('token')
-    //     );
+        $logoutUser = $this->getJson(route('logout.user'), [], 1, [ 'x-HTTP_AUTHORIZATION' => $this->token]);
+     
+        // $logoutUser = $this->actingAs($this->user)->withHeaders([
+        //     'HTTP_Accept' => 'application/json',
+        //     'HTTP_AUTHORIZATION' => $this->token
+        // ])->get(route('logout.user'), [], ['HTTP_Authorization' => $this->token]);
+
+        // dd($logoutUser->dumpHeaders());
+        $logoutUser->assertStatus(200);
+
+        $logoutUser->assertJson(
+            fn (AssertableJson $json) =>
+            $json->hasAll(['data', 'message'])->missing('token')
+        );
     }
 }

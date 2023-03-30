@@ -16,6 +16,10 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
         $this->user = User::factory()->create();
         $this->token =  $token = $this->respondWithToken($this->user);
+        $this->withHeaders([
+            'Authorization' => 'Bearer ' . $this->token,
+            'Accept' => 'application/json'
+        ]);
     }
 
     protected function respondWithToken($user)
